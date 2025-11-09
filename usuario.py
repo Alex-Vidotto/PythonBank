@@ -1,8 +1,8 @@
 from PyQt6.QtCore import Qt
 from PyQt6.QtWidgets import (QDialog, QLabel, QPushButton,
-                             QLineEdit, QMessageBox, QWidget)
+                             QLineEdit, QMessageBox, QWidget, QComboBox)
 from PyQt6.QtGui import QFont
-from db import registrar_user
+from db import registrar_user, buscar_usuario
 
 class RegistrarUsuarioView(QDialog):
     
@@ -12,7 +12,7 @@ class RegistrarUsuarioView(QDialog):
         self.generar_formulario()
         
     def generar_formulario(self):
-        self.setGeometry(100, 100, 350, 250)
+        self.setFixedSize(350, 250)
         self.setWindowTitle("Formulario de registro")
         
         user_label = QLabel(self)
@@ -21,38 +21,25 @@ class RegistrarUsuarioView(QDialog):
         user_label.move(20,44)
         
         self.user_input = QLineEdit(self)
-        self.user_input.setGeometry(90, 40, 250, 24)
+        self.user_input.setGeometry(70, 40, 260, 24)
         
         dni_label = QLabel(self)
         dni_label.setText("DNI:")
         dni_label.setFont(QFont("Arial", 10))
-        dni_label.move(20,74)
+        dni_label.move(20,84)
         
         self.dni_input = QLineEdit(self)
-        self.dni_input.setGeometry(90, 70, 250, 24)
+        self.dni_input.setGeometry(60, 74, 270, 24)
         
         
-        password_1_label = QLabel(self)
-        password_1_label.setText("Contraseña:")
-        password_1_label.setFont(QFont("Arial", 10))
-        password_1_label.move(20,104)
-
-        self.password_1_input = QLineEdit(self)
-        self.password_1_input.setGeometry(90, 100, 250, 24)
-        self.password_1_input.setEchoMode(
-            QLineEdit.EchoMode.Password
-        )
+        user_label = QLabel(self)
+        user_label.setText("Tipo de Cliente:")
+        user_label.setFont(QFont("Arial", 10))
+        user_label.move(20,118)
         
-        password_2_label = QLabel(self)
-        password_2_label.setText("Contraseña:")
-        password_2_label.setFont(QFont("Arial", 10))
-        password_2_label.move(20,134)
-
-        self.password_2_input = QLineEdit(self)
-        self.password_2_input.setGeometry(90, 130, 250, 24)
-        self.password_2_input.setEchoMode(
-            QLineEdit.EchoMode.Password
-        )
+        self.eleccion_persona = QComboBox(self)
+        self.eleccion_persona.setGeometry(120, 114, 210, 24)
+        self.eleccion_persona.addItems(["Persona", "Empresa"])
         
         create_button = QPushButton(self)
         create_button.setText("Guardar")
@@ -70,21 +57,19 @@ class RegistrarUsuarioView(QDialog):
     def crear_usuario(self):
         dni = self.dni_input.text()
         nombre = self.user_input.text()
-        password1 = self.password_1_input.text()
-        password2 = self.password_2_input.text()
-        lista = [dni, nombre, password1, password2]
+        eleccion_persona = self.eleccion_persona.currentText()
         
-        if not all([dni, nombre, password1, password2]):
+        if not all([dni, nombre, eleccion_persona]):
                 QMessageBox.warning(self, "Error", "Todos los campos son obligatorios.",
                                     QMessageBox.StandardButton.Close)
                 return
-        if password1 != password2:
-             QMessageBox.warning(self, "Erro", "Contraseña no son identicas",
+        if buscar_usuario("dni", dni) != None:
+             QMessageBox.warning(self, "Erro", "Ya existe el usuario",
                                  QMessageBox.StandardButton.Close)
              return
         
         try:
-            registrar_user(dni, nombre, password1)
+            registrar_user(dni, nombre, eleccion_persona)
         except ValueError as e:
             QMessageBox.warning(self, "Error", str(e), QMessageBox.StandardButton.Close)
             return
