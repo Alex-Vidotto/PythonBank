@@ -6,7 +6,8 @@ from PyQt6.QtWidgets import (QApplication, QMainWindow, QStatusBar, QWidget,
 from PyQt6.QtGui import QAction, QKeySequence, QFont
 from cuenta import RegistrarCuentaView, CuentasView
 from usuario import RegistrarUsuarioView
-from db import crear_tablas, buscar_cuenta_id_dni, id_por_dni
+from db import crear_tablas, buscar_cuenta_por_id, id_por_dni
+from operaciones_banco import *
 
 crear_tablas()
 class MainWindow(QMainWindow):
@@ -94,7 +95,35 @@ class MainWindow(QMainWindow):
         self.sector_cuenta.setLayout(layout_vertical)
 
     def sector_operaciones_ui(self):
-        pass
+        layout_vertical = QVBoxLayout() #incorpora layaout principal vertical para la izquierda
+
+        btn_depositar = QPushButton(self)
+        btn_depositar.setText("Deposito")
+        btn_depositar.clicked.connect(self.depositar)
+        
+        btn_retirar = QPushButton(self)
+        btn_retirar.setText("Extraer")
+        btn_retirar.clicked.connect(self.retirar)
+        
+        btn_transferir = QPushButton(self)
+        btn_transferir.setText("Transferir")
+        btn_transferir.clicked.connect(self.transferir)
+        
+        btn_plazo_fijo = QPushButton(self)
+        btn_plazo_fijo.setText("Plazo fijo")
+        btn_plazo_fijo.clicked.connect(self.plazo_fijo)
+        
+
+        layout_vertical.setAlignment(Qt.AlignmentFlag.AlignTop | Qt.AlignmentFlag.AlignLeft)
+
+        layout_vertical.addWidget(btn_depositar)
+        layout_vertical.addWidget(btn_retirar)
+        layout_vertical.addWidget(btn_transferir)
+        layout_vertical.addWidget(btn_plazo_fijo)
+        
+
+        self.sector_operaciones.setLayout(layout_vertical)
+
     
     def registrar_cuenta(self):
         self.new_cuenta = RegistrarCuentaView()
@@ -107,6 +136,24 @@ class MainWindow(QMainWindow):
     def ver_cuentas(self):
         self.view_cuentas = CuentasView()
         self.view_cuentas.show()
+    def historial_cuenta(self):
+        pass
+        
+    def depositar(self):
+        self.deposito = DepositoView()
+        self.deposito.show()
+        
+    def retirar(self):
+        self.retiro = RetiroView()
+        self.retiro.show()
+        
+    def transferir(self):
+        self.tranferencia = TransferirView()
+        self.tranferencia.show()
+        
+    def plazo_fijo(self):
+        self.plazofijo = PlazoFijoView()
+        self.plazofijo.show()
         
         
         
